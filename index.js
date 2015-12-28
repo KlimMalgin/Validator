@@ -56,6 +56,29 @@ $.ajax({/*...*/})
 	
 /******************************************************************************/
 
+var rules = {
+    email: function (newValue, oldValue, $field, $form) {
+        return /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(newValue);
+    },
+    login: function (newValue, oldValue, $field, $form) {
+        return /^[a-zA-Z0-9_.+-]+$/.test(newValue);
+    },
+    code: function (newValue, oldValue, $field, $form) {
+        return /^[a-zA-Z0-9_.+-]+\-[a-zA-Z0-9_.+-]+\-[a-zA-Z0-9_.+-]+$/.test(newValue);
+    }
+};
+
+
+oValidate
+    .form($myForm)
+    .rules(rules)
+    .compose({
+        loginEmail: [oValidate.rules.login, oValidate.rules.email.invert],
+        emailCode: [oValidate.rules.email, oValidate.rules.code]
+    });
+	
+/******************************************************************************/
+
 oValidate.form($myForm);
 
 var check = oValidate.checkGenerator();
@@ -65,8 +88,14 @@ if (check('email') && check('password')) {
     $myForm.addClass('error');
 }
 
+oValidate.check('email')    // true|false
+oValidate.check('country')    // true|false
 
-oValidate.status('keyup', 'fieldName', function (boolState) {
-    // ???
-})
+oValidate.fcheck('email').fcheck('password').call(function (state /*Общий статус: true|false*/, stateObject /*Статус каждого проверенного поля*/) { /*...*/ });
+
+oValidate.on('keyup:email', function (newValue, oldValue, $field, $form) {
+    // some code
+});
+
+
 
